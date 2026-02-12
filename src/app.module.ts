@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
 import * as Joi from 'joi';
 import configuration from './config/configuration';
 
 @Module({
-    imports: [UsersModule,
+    imports: [
         // MongooseModule.forRoot('mongodb+srv://askAutomation:U40FreolxBoZQqtq@cluster0.qseat.mongodb.net/'),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
@@ -32,6 +32,8 @@ import configuration from './config/configuration';
                 DATABASE_PORT: Joi.number().default(5432),
             }),
         }),
+
+        UsersModule,
     ],
     controllers: [AppController],
     providers: [AppService],
