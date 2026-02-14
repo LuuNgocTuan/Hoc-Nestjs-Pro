@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { create } from 'domain';
 
 @Controller('users')
 export class UsersController {
@@ -9,16 +10,15 @@ export class UsersController {
 
     @Post()
     create(
-        @Body('email') myEmail: string, //cái @Body() này để lấy dữ liệu từ body request như nodejs là req.body
-        @Body('password') myPassword: string,
-        @Body('name')
-        // createUserDto: CreateUserDto
-
-        myName: string,
+        // @Body('email') myEmail: string, //cái @Body() này để lấy dữ liệu từ body request như nodejs là req.body
+        // @Body('password') myPassword: string,
+        // @Body('name')
+        @Body() createUserDto: CreateUserDto
 
     ) {
-        // return this.usersService.create(createUserDto);
-        return this.usersService.create(myEmail, myPassword, myName);
+        console.log('check DTO:',createUserDto);
+        return this.usersService.create(createUserDto);
+        // return this.usersService.create(myEmail, myPassword, myName);
     }
 
     @Get()
