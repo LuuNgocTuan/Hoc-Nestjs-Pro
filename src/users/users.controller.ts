@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { create } from 'domain';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +15,7 @@ export class UsersController {
         @Body() createUserDto: CreateUserDto
 
     ) {
-        console.log('check DTO:',createUserDto);
+        console.log('check DTO:', createUserDto);
         return this.usersService.create(createUserDto);
         // return this.usersService.create(myEmail, myPassword, myName);
     }
@@ -27,8 +26,9 @@ export class UsersController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
+    findById(@Param('id') id: string) {
+        // @Param() params: any //cái @Param() này để lấy dữ liệu từ params url như nodejs là req.params
+        return this.usersService.findById(id);
     }
 
     @Patch(':id')

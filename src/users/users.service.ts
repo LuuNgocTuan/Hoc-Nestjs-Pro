@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class UsersService {
 
     async create(DTO: CreateUserDto) {
         const hashPassword = await this.getHashPassword(DTO.password);
-        const user = await this.UserModel.create({ email:DTO.email, password: hashPassword, name: DTO.name, address: DTO.address, age: DTO.age });
+        const user = await this.UserModel.create({ email: DTO.email, password: hashPassword, name: DTO.name, address: DTO.address, age: DTO.age });
         return user;
     }
 
@@ -34,8 +34,13 @@ export class UsersService {
         return `This action returns all users`;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} user`;
+    findById(id: string) {
+        // return `This action returns a #${id} user`;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return 'Not found user'; // Hoặc bạn có thể trả về một lỗi hoặc giá trị mặc định khác
+        }
+        return this.UserModel.findById(id);
+        //tìm user theo id trong database, this là để truy cập đến class UserModel đã được inject ở constructor, findById là hàm của mongoose để tìm theo id, id là tham số truyền vào hàm findOne
     }
 
     update(id: number, updateUserDto: UpdateUserDto) {
