@@ -43,8 +43,9 @@ export class UsersService {
         //tìm user theo id trong database, this là để truy cập đến class UserModel đã được inject ở constructor, findById là hàm của mongoose để tìm theo id, id là tham số truyền vào hàm findOne
     }
 
-    update(id: number, updateUserDto: UpdateUserDto) {
-        return `This action updates a #${id} user`;
+    async update(id: string, updateUserDto: UpdateUserDto) {
+        // return `This action updates a #${id} user`;
+        return await this.UserModel.updateOne({ _id: id }, { ...updateUserDto });
     }
 
     remove(id: number) {
