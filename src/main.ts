@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import *as dns from 'dns';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 async function bootstrap() {
@@ -15,6 +16,8 @@ async function bootstrap() {
 
     console.log('check path:', join(__dirname, '..', 'public'), join(__dirname, '..', 'views'));
     // const PORT = Number(process.env.PORT)
+
+    app.useGlobalPipes(new ValidationPipe());
 
     const configService = app.get(ConfigService);
     const port = configService.get('PORT');
