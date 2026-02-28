@@ -1,10 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { comparePassword } from './utils/password.util';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService) { }
+    constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService
+    ) { }
 
     // Hàm validateUser sẽ được gọi khi người dùng đăng nhập, nó sẽ kiểm tra xem username và password có hợp lệ không
     async validateUser(username: string, pass: string): Promise<any> {
@@ -25,7 +29,14 @@ export class AuthService {
             ? user.toObject()
             : user;
         return result;
-
     }
-
+    async login(user: any) {
+        const payload = {
+            username: user.email,
+            sub: user._id
+        };
+        return {
+            access_token: this.jwtService.sign(payload),
+        };
+    }
 }
