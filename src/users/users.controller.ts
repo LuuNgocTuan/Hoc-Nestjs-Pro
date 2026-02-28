@@ -12,11 +12,11 @@ export class UsersController {
         // @Body('email') myEmail: string, //cái @Body() này để lấy dữ liệu từ body request như nodejs là req.body
         // @Body('password') myPassword: string,
         // @Body('name')
-        @Body() createUserDto: CreateUserDto
+        @Body() ngocTuanDto: CreateUserDto
 
     ) {
-        console.log('check DTO:', createUserDto);
-        return this.usersService.create(createUserDto);
+        console.log('check DTO:', ngocTuanDto);
+        return this.usersService.create(ngocTuanDto);
         // return this.usersService.create(myEmail, myPassword, myName);
     }
 
