@@ -23,6 +23,7 @@ import configuration from './config/configuration';
         //     isGlobal: true,
         // }),
         ConfigModule.forRoot({
+            isGlobal: true,
             load: [configuration],
             validationSchema: Joi.object({
                 NODE_ENV: Joi.string()
