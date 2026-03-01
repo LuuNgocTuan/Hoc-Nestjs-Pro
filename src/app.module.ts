@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import configuration from './config/configuration';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
     imports: [
@@ -32,6 +34,8 @@ import configuration from './config/configuration';
                 PORT: Joi.number().port().default(3000),
                 DATABASE_HOST: Joi.string().required(),
                 DATABASE_PORT: Joi.number().default(5432),
+                JWT_ACCESS_TOKEN: Joi.string().required(),
+                JWT_ACCESS_EXPIRE: Joi.string().required(),
             }),
         }),
 
@@ -40,6 +44,13 @@ import configuration from './config/configuration';
         AuthModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: JwtAuthGuard,
+        // },
+        //chuyển sang cách sử dụng global guard trong main.ts để có thể sử dụng được reflector trong JwtAuthGuard
+    ],
 })
 export class AppModule { }

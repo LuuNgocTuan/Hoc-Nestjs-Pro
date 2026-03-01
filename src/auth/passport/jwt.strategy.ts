@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: configService.get<string>('JWT_SECRET') as string,
+            secretOrKey: configService.get<string>('JWT_ACCESS_TOKEN') as string,
         });
     }
 
@@ -20,3 +20,5 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return { userId: payload.sub, username: payload.username };
     }
 }
+
+// JwtStrategy sẽ được sử dụng để xác thực token khi người dùng gửi yêu cầu đến server, nó sẽ kiểm tra xem token có hợp lệ không và trả về thông tin user nếu token hợp lệ
