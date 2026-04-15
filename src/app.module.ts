@@ -9,6 +9,7 @@ import * as Joi from 'joi';
 import configuration from './config/configuration';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
     imports: [
@@ -40,8 +41,8 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
         }),
 
         UsersModule,
-
         AuthModule,
+        CompaniesModule,
     ],
     controllers: [AppController],
     providers: [
