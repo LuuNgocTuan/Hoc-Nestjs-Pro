@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { comparePassword } from './utils/password.util';
 import { JwtService } from '@nestjs/jwt';
+import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class AuthService {
@@ -15,13 +16,14 @@ export class AuthService {
         // 1️⃣ tìm user theo username
         const user = await this.usersService.findOneByUsername(username);
         if (!user) {
-            throw new UnauthorizedException('User not found');
+            return null;
+            // throw new UnauthorizedException();
         }
         // 2️⃣ so sánh password
         const isMatch = await comparePassword(pass, user.password);
-
         if (!isMatch) {
-            throw new UnauthorizedException('Invalid password');
+            return null;
+            throw new UnauthorizedException();
         }
         // 3️⃣ loại bỏ password trước khi trả về thông tin user
 
@@ -30,13 +32,22 @@ export class AuthService {
             : user;
         return result;
     }
-    async login(user: any) {
+    async login(user: IUser) {
+        const { _id, name, email, role } = user;
         const payload = {
-            username: user.email,
-            sub: user._id
+            sub: "token login",
+            iss: "from server",
+            _id,
+            name,
+            email,
+            role
         };
         return {
             access_token: this.jwtService.sign(payload),
+            _id,
+            name,
+            email,
+            role
         };
     }
 }

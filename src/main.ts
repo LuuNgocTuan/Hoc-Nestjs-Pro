@@ -11,7 +11,7 @@ dns.setServers(['1.1.1.1', '8.8.8.8']);
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
     const reflector = app.get(Reflector);
-    // app.useGlobalGuards(new JwtAuthGuard(reflector));
+    app.useGlobalGuards(new JwtAuthGuard(reflector));
 
     app.useStaticAssets(join(__dirname, '..', 'public'));//static files like css, img
     app.setBaseViewsDir(join(__dirname, '..', 'views')); //views
