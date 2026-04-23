@@ -3,13 +3,20 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company } from './schemas/company.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class CompaniesService {
     constructor(@InjectModel(Company.name) private CompanyModel: Model<Company>) { }
-    async create(createCompanyDto: CreateCompanyDto) {
-        const company = await this.CompanyModel.create({ ...createCompanyDto });
+    async create(createCompanyDto: CreateCompanyDto, user: IUser) {
+        const company = await this.CompanyModel.create({
+            ...createCompanyDto,
+            createdBy: {
+                _id: new Types.ObjectId(user._id), // ✅ CHỈ dùng cái này
+                email: user.email,
+            }
+        });
         return company;
 
         // return 'This action adds a new company';

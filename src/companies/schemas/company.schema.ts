@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type CompanyDocument = HydratedDocument<Company>;
 
@@ -14,9 +14,14 @@ export class Company {
     @Prop()
     description: string;
 
-    @Prop({ type: Object })
+    @Prop({
+        type: {
+            _id: { type: Types.ObjectId },
+            email: String,
+        },
+    })
     createdBy: {
-        _id: mongoose.Schema.Types.ObjectId;
+        _id: Types.ObjectId;
         email: string;
     };
 
