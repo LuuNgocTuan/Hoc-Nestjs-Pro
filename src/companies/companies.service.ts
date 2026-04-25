@@ -30,8 +30,15 @@ export class CompaniesService {
         return `This action returns a #${id} company`;
     }
 
-    update(id: number, updateCompanyDto: UpdateCompanyDto) {
-        return `This action updates a #${id} company`;
+    async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+        // return `This action updates a #${id} company`;
+        return await this.CompanyModel.updateOne({ _id: id }, {
+            ...updateCompanyDto,
+            updatedBy: {
+                _id: new Types.ObjectId(user._id),
+                email: user.email,
+            }
+        });
     }
 
     remove(id: number) {
