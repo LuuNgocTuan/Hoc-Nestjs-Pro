@@ -3,7 +3,7 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type CompanyDocument = HydratedDocument<Company>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Company {
     @Prop()
     name: string;
@@ -27,13 +27,13 @@ export class Company {
 
     @Prop({ type: Object })
     updatedBy: {
-        _id: mongoose.Schema.Types.ObjectId;
+        _id: Types.ObjectId;
         email: string;
     };
 
     @Prop({ type: Object })
     deletedBy: {
-        _id: mongoose.Schema.Types.ObjectId;
+        _id: Types.ObjectId;
         email: string;
     };
 
@@ -41,7 +41,10 @@ export class Company {
     createdAt: Date;
 
     @Prop()
-    updatedAt: string;
+    deletedAt: Date;
+
+    @Prop()
+    isDeleted: boolean;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

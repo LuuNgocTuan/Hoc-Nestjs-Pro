@@ -41,7 +41,17 @@ export class CompaniesService {
         });
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} company`;
+    async remove(id: string, user: IUser) {
+        // return `This action removes a #${id} company`;
+        return await this.CompanyModel.updateOne({ _id: id }, {
+            deletedBy: {
+                _id: new Types.ObjectId(user._id),
+                email: user.email,
+            },
+            isDeleted: true, // Thêm trường isDeleted để đánh dấu là đã xóa,
+            deletedAt: new Date(), // Thêm trường deletedAt để lưu thời gian xóa
+        }
+        )
     }
+
 }
