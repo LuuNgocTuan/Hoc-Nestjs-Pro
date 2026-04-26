@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { hashPassword } from 'src/auth/utils/password.util';
+import type { SoftDeleteModel } from 'mongoose-delete';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private UserModel: Model<User>) { }
+    constructor(@InjectModel(User.name) private UserModel: SoftDeleteModel<UserDocument>) { }
 
     // async getHashPassword(password: string): Promise<string> {
     //     const saltOrRounds = 10;
@@ -58,7 +59,7 @@ export class UsersService {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return 'Not found user';
         }
-        return this.UserModel.deleteOne({ _id: id });
+        return this.UserModel.delete({ _id: id });
 
         // return `This action removes a #${id} user`;
     }

@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Company } from './schemas/company.schema';
+import { Company, CompanyDocument } from './schemas/company.schema';
 import { Model, Types } from 'mongoose';
 import { IUser } from 'src/users/users.interface';
+import type { SoftDeleteModel } from 'mongoose-delete';
 
 @Injectable()
 export class CompaniesService {
-    constructor(@InjectModel(Company.name) private CompanyModel: Model<Company>) { }
+    constructor(@InjectModel(Company.name) private CompanyModel: SoftDeleteModel<CompanyDocument>) { }
     async create(createCompanyDto: CreateCompanyDto, user: IUser) {
         const company = await this.CompanyModel.create({
             ...createCompanyDto,
@@ -43,14 +44,12 @@ export class CompaniesService {
 
     async remove(id: string, user: IUser) {
         // return `This action removes a #${id} company`;
-        return await this.CompanyModel.updateOne({ _id: id }, {
-            deletedBy: {
+        return await this.CompanyModel.delete(
+            { _id: id },
+            {
                 _id: new Types.ObjectId(user._id),
                 email: user.email,
-            },
-            isDeleted: true, // Thêm trường isDeleted để đánh dấu là đã xóa,
-            deletedAt: new Date(), // Thêm trường deletedAt để lưu thời gian xóa
-        }
+            }
         )
     }
 
