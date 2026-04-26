@@ -3,7 +3,7 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import type { Request } from 'express';
-import { User } from 'src/decorator/customize';
+import { ResponseMessage, User } from 'src/decorator/customize';
 import type { IUser } from 'src/users/users.interface';
 
 @Controller('companies')
@@ -26,6 +26,7 @@ export class CompaniesController {
     }
 
     @Get()
+    @ResponseMessage('Lấy danh sách công ty thành công')
     findAll(
         @Query('page') currentPage: number,
         @Query('limit') limit: number,

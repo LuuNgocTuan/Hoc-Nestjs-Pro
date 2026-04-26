@@ -6,12 +6,15 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { TransformInterceptor } from './core/transform.interceptor';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
     const reflector = app.get(Reflector);
     app.useGlobalGuards(new JwtAuthGuard(reflector));
+    app.useGlobalInterceptors(new TransformInterceptor(reflector));
+
 
     app.useStaticAssets(join(__dirname, '..', 'public'));//static files like css, img
     app.setBaseViewsDir(join(__dirname, '..', 'views')); //views
