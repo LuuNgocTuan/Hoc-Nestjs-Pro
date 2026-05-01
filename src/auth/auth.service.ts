@@ -32,6 +32,7 @@ export class AuthService {
             : user;
         return result;
     }
+    
     async login(user: IUser) {
         const { _id, name, email, role } = user;
         const payload = {
@@ -50,4 +51,5 @@ export class AuthService {
             role
         };
     }
+
 }
