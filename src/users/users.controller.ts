@@ -1,29 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Public } from 'src/decorator/customize';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
+import type { IUser } from './users.interface';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Post()
-    create(
+    @ResponseMessage('Tạo mới người dùng thành công')
+    async create(
         // @Body('email') myEmail: string, //cái @Body() này để lấy dữ liệu từ body request như nodejs là req.body
         // @Body('password') myPassword: string,
         // @Body('name')
-        @Body() ngocTuanDto: CreateUserDto
+        @Body() createDto: CreateUserDto, @User() user: IUser
 
     ) {
-        console.log('check DTO:', ngocTuanDto);
-        return this.usersService.create(ngocTuanDto);
+        console.log('check DTO:', createDto);
+        const createdUser = await this.usersService.create(createDto, user);
+        return {
+            _id: createdUser._id,
+            createdAt: createdUser.createdAt,
+        }
         // return this.usersService.create(myEmail, myPassword, myName);
     }
 
     @Get()
-    findAll() {
-        return this.usersService.findAll();
+    @ResponseMessage('Lấy danh sách người dùng phân trang thành công')
+    async findAll(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+        @Query() qs: string
+    ) {
+        return await this.usersService.findAll(page, limit, qs);
     }
 
     @Get(':id')
@@ -33,12 +44,14 @@ export class UsersController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(id, updateUserDto);
+    @ResponseMessage('Cập nhật thông tin người dùng thành công')
+    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
+        return await this.usersService.update(id, updateUserDto, user);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(id);
+    @ResponseMessage('Xóa người dùng thành công')
+    async remove(@Param('id') id: string, @User() user: IUser) {
+        return await this.usersService.remove(id, user);
     }
 }

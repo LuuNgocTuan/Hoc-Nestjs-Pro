@@ -20,7 +20,7 @@ export class TransformInterceptor<T>
     implements NestInterceptor<T, Response<T>> {
     constructor(private reflector: Reflector) {
     }
-    
+
     intercept(
         context: ExecutionContext,
         next: CallHandler,
@@ -32,7 +32,7 @@ export class TransformInterceptor<T>
                     statusCode: context.switchToHttp().getResponse().statusCode,
                     message: this.reflector.get<string>(RESPONSE_MESSAGE_KEY,
                         context.getHandler()) || data.message || '',
-                    data: data
+                    data,
                 })),
             );
     }

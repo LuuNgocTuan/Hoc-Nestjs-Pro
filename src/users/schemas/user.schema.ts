@@ -9,7 +9,7 @@ export class User {
     @Prop()
     name: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     email!: string;
 
     @Prop({ required: true })
@@ -27,7 +27,7 @@ export class User {
     @Prop()
     phone?: string;
 
-    @Prop()
+    @Prop({ default: 'USER', enum: ['USER', 'ADMIN'] })
     role?: string;
 
     @Prop({
@@ -44,11 +44,11 @@ export class User {
     @Prop()
     refreshToken?: string;
 
-    // @Prop()
-    // createdAt: Date;
+    @Prop()
+    createdAt: Date;
 
-    // @Prop()
-    // updatedAt: Date;
+    @Prop()
+    updatedAt: Date;
 
     // @Prop()
     // deletedAt: Date;
