@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
+// import * as cookieParser from 'cookie-parser';
 import cookieParser from 'cookie-parser';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
