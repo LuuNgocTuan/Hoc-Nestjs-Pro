@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
+import cookieParser from 'cookie-parser';
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 async function bootstrap() {
@@ -28,6 +29,10 @@ async function bootstrap() {
     const configService = app.get(ConfigService);
     const port = configService.get('PORT');
 
+    //config cookies
+    app.use(cookieParser());
+
+    //config CORS
     app.enableCors(
         {
             "origin": "http://localhost:3000",

@@ -10,6 +10,8 @@ import configuration from './config/configuration';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
+import { validationSchema } from './config/validation.schema';
+import jwtConfig from './config/jwt.config';
 
 @Module({
     imports: [
@@ -27,17 +29,9 @@ import { CompaniesModule } from './companies/companies.module';
         // }),
         ConfigModule.forRoot({
             isGlobal: true,
-            load: [configuration],
-            validationSchema: Joi.object({
-                NODE_ENV: Joi.string()
-                    .valid('development', 'production', 'test', 'provision')
-                    .default('development'),
-                PORT: Joi.number().port().default(3000),
-                DATABASE_HOST: Joi.string().required(),
-                DATABASE_PORT: Joi.number().default(5432),
-                JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
-                JWT_ACCESS_EXPIRE: Joi.string().required(),
-            }),
+            validationSchema,
+            load: [configuration, jwtConfig],
+
         }),
 
         UsersModule,

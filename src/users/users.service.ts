@@ -204,4 +204,12 @@ export class UsersService {
 
         // return `This action removes a #${id} user`;
     }
+
+    updateUserToken = async (id: string, refreshToken: string) => {
+        await this.UserModel.updateOne(
+            { _id: id },
+            { refreshToken }
+
+        );
+    }
 }
