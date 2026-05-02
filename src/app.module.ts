@@ -35,7 +35,7 @@ import { CompaniesModule } from './companies/companies.module';
                 PORT: Joi.number().port().default(3000),
                 DATABASE_HOST: Joi.string().required(),
                 DATABASE_PORT: Joi.number().default(5432),
-                JWT_ACCESS_TOKEN: Joi.string().required(),
+                JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
                 JWT_ACCESS_EXPIRE: Joi.string().required(),
             }),
         }),
