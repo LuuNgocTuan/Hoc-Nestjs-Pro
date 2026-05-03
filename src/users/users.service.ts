@@ -14,7 +14,7 @@ import aqp from 'api-query-params';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(UserM.name) private UserModel: SoftDeleteModel<UserDocument>) { }
+    constructor(@InjectModel(UserM.name) private userModel: SoftDeleteModel<UserDocument>) { }
 
     // async getHashPassword(password: string): Promise<string> {
     //     const saltOrRounds = 10;
@@ -24,7 +24,7 @@ export class UsersService {
 
     // async create(email: string, password: string, name: string) {
     //     const hashPassword = await this.getHashPassword(password);
-    //     const user = await this.UserModel.create({ email, password: hashPassword, name });
+    //     const user = await this.userModel.create({ email, password: hashPassword, name });
     //     return user;
     // }
 
@@ -34,7 +34,7 @@ export class UsersService {
         const { name, email, password, age, gender, address } = createDto;
 
         //check email đã tồn tại chưa
-        const existingUser = await this.UserModel.findOne({ email });
+        const existingUser = await this.userModel.findOne({ email });
         if (existingUser) {
             throw new BadRequestException(`Email ${email} đã tồn tại`);
         }
@@ -42,7 +42,7 @@ export class UsersService {
         //tiếp tục tạo user mới
         //hash password trước khi lưu vào database
         const hashedPassword = await hashPassword(password);
-        const newUser = await this.UserModel.create({
+        const newUser = await this.userModel.create({
             name,
             email,
             password: hashedPassword,
@@ -66,7 +66,7 @@ export class UsersService {
         const { name, email, password, age, gender, address } = registerUserDto;
 
         //check email đã tồn tại chưa
-        const existingUser = await this.UserModel.findOne({ email });
+        const existingUser = await this.userModel.findOne({ email });
         if (existingUser) {
             throw new BadRequestException(`Email ${email} đã tồn tại`);
         }
@@ -74,7 +74,7 @@ export class UsersService {
         //tiếp tục tạo user mới
         //hash password trước khi lưu vào database
         const hashedPassword = await hashPassword(password);
-        const user = await this.UserModel.create({
+        const user = await this.userModel.create({
             name,
             email,
             password: hashedPassword,
@@ -86,41 +86,74 @@ export class UsersService {
         return user;
     }
 
-    async findAll(currentPage: number, limit: number, qs: string) {
+    // async findAll(currentPage: number, limit: number, qs: string) {
+    //     const { filter, sort, population } = aqp(qs);
+    //     delete filter.current;
+    //     delete filter.pageSize;
+
+    //     // Tính toán phân trang
+    //     const offset = (currentPage - 1) * limit;
+    //     const defaultLimit = limit ? +limit : 10;
+
+    //     // const totalItems = await this.userModel.countDocuments(filter);
+    //     const totalItems = (await this.userModel.find(filter)).length;
+    //     const totalPages = Math.ceil(totalItems / limit);
+
+    //     // Thực hiện truy vấn với phân trang, sắp xếp, lọc và populate
+    //     const users = await this.userModel
+    //         .find(filter)
+    //         .skip(offset)
+    //         .limit(defaultLimit)
+    //         .sort(sort as any)
+    //         .select('-password -refreshToken')
+    //         .populate(population)
+    //         .exec();
+
+    //     return {
+    //         pagination: {
+    //             current: currentPage, //trang hiện tại
+    //             pageSize: limit, //số lượng bản ghi đã lấy
+    //             pages: totalPages, //tổng số trang với điều kiện query
+    //             total: totalItems // tổng số phần tử (số bản ghi)
+    //         },
+    //         results: users,
+    //     };
+    // }
+
+async findAll(currentPage: number, limit: number, qs: string) {
         const { filter, sort, projection, population } = aqp(qs);
-        delete filter.page;
-        delete filter.limit;
+        delete filter.current;
+        delete filter.pageSize;
+        // const skip = (currentPage - 1) * limit;
+        // return `This action returns all users`;
+        let offset = (+currentPage - 1) * +limit;
+        let defaultLimit = +limit ? +limit : 10;
 
-        // Tính toán phân trang
-        const offset = (currentPage - 1) * limit;
-        const defaultLimit = limit ? +limit : 10;
+        const totalItems = (await this.userModel.find(filter)).length;
+        const totalPages = Math.ceil(totalItems / defaultLimit);
 
-        const totalItems = await this.UserModel.countDocuments(filter);
-        const totalPages = Math.ceil(totalItems / limit);
-
-        // Thực hiện truy vấn với phân trang, sắp xếp, lọc và populate
-        const users = await this.UserModel
+        const result = await this.userModel
             .find(filter)
             .skip(offset)
             .limit(defaultLimit)
+            .select('-password') // loại bỏ trường password trong kết quả trả về
             .sort(sort as any)
-            .select('-password -refreshToken')
             .populate(population)
             .exec();
 
         return {
-            pagination: {
+            meta: {
                 current: currentPage, //trang hiện tại
                 pageSize: limit, //số lượng bản ghi đã lấy
                 pages: totalPages, //tổng số trang với điều kiện query
-                total: totalItems // tổng số phần tử (số bản ghi)
+                total: totalItems, // tổng số phần tử (số bản ghi)
             },
-            results: users,
+            result, //kết quả query
         };
     }
 
     findOneByUsername(username: string) {
-        return this.UserModel.findOne({
+        return this.userModel.findOne({
             email: username
         });
     }
@@ -130,28 +163,28 @@ export class UsersService {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return 'Not found user'; // Hoặc bạn có thể trả về một lỗi hoặc giá trị mặc định khác
         }
-        const user = await this.UserModel
+        const user = await this.userModel
             .findById(id)
             .select('-password -refreshToken'); // loại bỏ trường password khỏi kết quả trả về
         if (!user) {
             throw new NotFoundException('User not found');
         }
         return user;
-        //tìm user theo id trong database, this là để truy cập đến class UserModel đã được inject ở constructor, findById là method của mongoose để tìm document theo _id, id là tham số truyền vào hàm findOne
+        //tìm user theo id trong database, this là để truy cập đến class userModel đã được inject ở constructor, findById là method của mongoose để tìm document theo _id, id là tham số truyền vào hàm findOne
     }
 
     async update(id: string, updateUserDto: UpdateUserDto, user: IUser) {
         // return `This action updates a #${id} user`;
         try {
             // 1. Check user tồn tại
-            const existingUser = await this.UserModel.findById(id);
+            const existingUser = await this.userModel.findById(id);
             if (!existingUser) {
                 throw new NotFoundException('User not found');
             }
 
             // 2. Check email trùng (nếu có update email)
             if (updateUserDto.email) {
-                const emailExists = await this.UserModel.findOne({
+                const emailExists = await this.userModel.findOne({
                     email: updateUserDto.email,
                     _id: { $ne: id }, // loại trừ chính nó
                 });
@@ -160,7 +193,7 @@ export class UsersService {
                     throw new BadRequestException(`Email ${updateUserDto.email} đã tồn tại`);
                 }
                 // 3. Update user
-                const result = await this.UserModel.findByIdAndUpdate(
+                const result = await this.userModel.findByIdAndUpdate(
                     id,
                     {
                         ...updateUserDto,
@@ -191,7 +224,7 @@ export class UsersService {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return 'Not found user';
         }
-        await this.UserModel.updateOne(
+        await this.userModel.updateOne(
             { _id: id },
             {
                 deletedBy: {
@@ -200,13 +233,13 @@ export class UsersService {
                 }
             }
         );
-        return this.UserModel.delete({ _id: id });
+        return this.userModel.delete({ _id: id });
 
         // return `This action removes a #${id} user`;
     }
 
     updateUserToken = async (id: string, refreshToken: string) => {
-        await this.UserModel.updateOne(
+        await this.userModel.updateOne(
             { _id: id },
             { refreshToken }
 
@@ -214,7 +247,7 @@ export class UsersService {
     }
 
     findUserByToken = async (refreshToken: string) => {
-        return await this.UserModel.findOne(
+        return await this.userModel.findOne(
             { refreshToken }
         );
     }

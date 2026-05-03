@@ -10,7 +10,7 @@ import { TransformInterceptor } from './core/transform.interceptor';
 // import * as cookieParser from 'cookie-parser';
 import cookieParser from 'cookie-parser';
 
-dns.setServers(['1.1.1.1', '8.8.8.8']);
+// dns.setServers(['1.1.1.1', '8.8.8.8']);
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
     const reflector = app.get(Reflector);
