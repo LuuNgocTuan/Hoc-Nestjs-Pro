@@ -15,7 +15,7 @@ export enum JobStatus {
 class UserAction {
 
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    _id: mongoose.Schema.Types.ObjectId;
+    _id: Types.ObjectId;
 
     @Prop()
     email: string;
@@ -27,11 +27,11 @@ export class Job {
     name: string;
 
     @Prop({ required: true })
-    skill: string[];
+    skills: string[];
 
     @Prop({
         type: {
-            _id: { type: Types.ObjectId },
+            _id: { type: mongoose.Schema.Types.ObjectId },
             name: String,
         },
     })
@@ -176,17 +176,22 @@ JobSchema.plugin(MongooseDelete, {
 | AUTO EXPIRE LOGIC (Tự động kiểm tra dữ liệu trước khi lưu document xuống MongoDB),trường hợp job đã hết hạn thì tự động chuyển trạng thái thành INACTIVE và cập nhật lý do hết hạn
 |--------------------------------------------------------------------------
 */
-JobSchema.pre('save', function (next) {
+JobSchema.pre('save', async function () {
 
-    if (this.expiredAt && this.expiredAt < new Date()) {
+    if (
+        this.endDate &&
+        this.endDate < new Date() &&
+        this.status !== JobStatus.EXPIRED
+    ) {
 
         this.isActive = false;
 
         this.status = JobStatus.EXPIRED;
 
+        this.expiredAt = new Date();
+
         this.deactivatedAt = new Date();
 
         this.inactiveReason = 'Job expired automatically';
     }
-
 });

@@ -4,9 +4,17 @@ import mongoose from "mongoose";
 import { JobStatus } from "../schemas/job.schema";
 
 class Company {
-    @IsNotEmpty()
-    _id: mongoose.Schema.Types.ObjectId;
-    @IsNotEmpty()
+    @IsMongoId({
+        message: '_id không hợp lệ',
+    })
+    @IsNotEmpty({
+        message: '_id không được để trống',
+    })
+    _id: string;
+
+    @IsNotEmpty({
+        message: 'name không được để trống',
+    })
     name: string;
 }
 
@@ -52,7 +60,7 @@ export class CreateJobDto {
     @IsNotEmpty({
         message: 'Quantity không được để trống',
     })
-    quantity: string;
+    quantity: number;
 
     @IsNotEmpty({
         message: 'Description không được để trống',
