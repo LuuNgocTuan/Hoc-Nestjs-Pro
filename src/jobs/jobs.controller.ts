@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
@@ -7,31 +7,39 @@ import type { IUser } from 'src/users/users.interface';
 
 @Controller('jobs')
 export class JobsController {
-  constructor(private readonly jobsService: JobsService) {}
+    constructor(private readonly jobsService: JobsService) { }
 
-  @Post()
-  @ResponseMessage('Tạo một công việc thành công')
-  create(@Body() createJobDto: CreateJobDto, @User() user: IUser) {
-    return this.jobsService.create(createJobDto,user);
-  }
+    @Post()
+    @ResponseMessage('Tạo một công việc thành công')
+    create(@Body() createJobDto: CreateJobDto, @User() user: IUser) {
+        return this.jobsService.create(createJobDto, user);
+    }
 
-  @Get()
-  findAll() {
-    return this.jobsService.findAll();
-  }
+    @Get()
+    @ResponseMessage('Lấy tất cả công việc phân trang')
+    findAll(
+        @Query('current') currentPage: number,
+        @Query('pageSize') limit: number,
+        @Query() qs: string
+    ) {
+        return this.jobsService.findAll(currentPage, limit, qs);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jobsService.findOne(+id);
-  }
+    @Get(':id')
+    @ResponseMessage('Tìm kiếm công việc thành công')
+    async findOne(@Param('id') id: string) {
+        return await this.jobsService.findOne(id);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
-    return this.jobsService.update(+id, updateJobDto);
-  }
+    @Patch(':id')
+    @ResponseMessage('Cập nhật công việc thành công')
+    async update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto, @User() user: IUser) {
+        return await this.jobsService.update(id, updateJobDto, user);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobsService.remove(+id);
-  }
+    @Delete(':id')
+    @ResponseMessage('Xóa công việc thành công')
+    async remove(@Param('id') id: string, @User() user: IUser) {
+        return await this.jobsService.remove(id, user);
+    }
 }

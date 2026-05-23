@@ -120,7 +120,7 @@ export class UsersService {
     //     };
     // }
 
-async findAll(currentPage: number, limit: number, qs: string) {
+    async findAll(currentPage: number, limit: number, qs: string) {
         const { filter, sort, projection, population } = aqp(qs);
         delete filter.current;
         delete filter.pageSize;
@@ -129,7 +129,7 @@ async findAll(currentPage: number, limit: number, qs: string) {
         let offset = (+currentPage - 1) * +limit;
         let defaultLimit = +limit ? +limit : 10;
 
-        const totalItems = (await this.userModel.find(filter)).length;
+        const totalItems = await this.userModel.countDocuments(filter);
         const totalPages = Math.ceil(totalItems / defaultLimit);
 
         const result = await this.userModel

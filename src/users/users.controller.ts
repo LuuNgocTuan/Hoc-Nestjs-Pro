@@ -30,11 +30,11 @@ export class UsersController {
     @Get()
     @ResponseMessage('Lấy danh sách người dùng phân trang thành công')
     async findAll(
-        @Query('current') page: number = 1,
-        @Query('pageSize') limit: number = 10,
+        @Query('current') currentPage: number,
+        @Query('pageSize') limit: number,
         @Query() qs: string
     ) {
-        return await this.usersService.findAll(page, limit, qs);
+        return await this.usersService.findAll(currentPage, limit, qs);
     }
 
     @Get(':id')

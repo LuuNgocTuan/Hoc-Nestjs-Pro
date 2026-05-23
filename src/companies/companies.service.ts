@@ -30,9 +30,9 @@ export class CompaniesService {
         delete filter.current;
         delete filter.pageSize;
 
-        let offset = (currentPage - 1) * (limit);
-        let defaultLimit = limit ? +limit : 10;
-        const totalItems = (await this.CompanyModel.find(filter)).length;
+        const offset = (currentPage - 1) * (limit);
+        const defaultLimit = limit ? +limit : 10;
+        const totalItems = await this.CompanyModel.countDocuments(filter);
         const totalPages = Math.ceil(totalItems / defaultLimit);
 
         const result = await this.CompanyModel.find(filter)
