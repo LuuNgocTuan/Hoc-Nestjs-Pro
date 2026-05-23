@@ -11,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
 import { validationSchema } from './config/validation.schema';
+import { JobsModule } from './jobs/jobs.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -37,6 +38,7 @@ import jwtConfig from './config/jwt.config';
         UsersModule,
         AuthModule,
         CompaniesModule,
+        JobsModule,
     ],
     controllers: [AppController],
     providers: [

@@ -1,11 +1,16 @@
 import { Type } from "class-transformer";
-import { IsEmail, IsNotEmpty, IsNotEmptyObject, IsObject, ValidateNested } from "class-validator";
+import { IsEmail, IsMongoId, IsNotEmpty, IsNotEmptyObject, IsObject, ValidateNested } from "class-validator";
 import mongoose from "mongoose";
 
 class Company {
-    @IsNotEmpty()
-    _id: mongoose.Schema.Types.ObjectId;
-    @IsNotEmpty()
+    @IsMongoId({
+        message: 'Company id không hợp lệ',
+    })
+    _id: string;
+
+    @IsNotEmpty({
+        message: 'Company name không được để trống',
+    })
     name: string;
 }
 export class CreateUserDto {
@@ -47,11 +52,11 @@ export class CreateUserDto {
     // })
     // role: string;
 
-    // @IsNotEmptyObject()
-    // @IsObject()
-    // @ValidateNested()
-    // @Type(() => Company)
-    // company: Company;
+    @IsNotEmptyObject()
+    @IsObject()
+    @ValidateNested()
+    @Type(() => Company)
+    company: Company;
 }
 
 export class RegisterUserDto {
