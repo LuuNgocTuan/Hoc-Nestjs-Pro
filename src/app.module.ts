@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
 import { validationSchema } from './config/validation.schema';
 import { JobsModule } from './jobs/jobs.module';
+import { FilesModule } from './files/files.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -39,6 +40,7 @@ import jwtConfig from './config/jwt.config';
         AuthModule,
         CompaniesModule,
         JobsModule,
+        FilesModule,
     ],
     controllers: [AppController],
     providers: [
